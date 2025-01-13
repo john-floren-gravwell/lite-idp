@@ -19,6 +19,7 @@ import (
 	"compress/flate"
 	"crypto"
 	"crypto/dsa"
+	"crypto/ecdsa"
 	"crypto/rsa"
 	"crypto/sha1"
 	"crypto/sha256"
@@ -118,6 +119,13 @@ func verifySignature(rawQuery, alg, expectedSig string, sp *ServiceProvider) err
 	case "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256":
 		sum := sha256Sum(sig)
 		return rsa.VerifyPKCS1v15(sp.publicKey.(*rsa.PublicKey), crypto.SHA256, sum, signature)
+	case "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256":
+		sum := sha256Sum(sig)
+		ok := ecdsa.VerifyASN1(sp.publicKey.(*ecdsa.PublicKey), sum, signature)
+		if !ok {
+			return errors.New("Invalid ECDSA signature")
+		}
+		return nil
 	default:
 		return fmt.Errorf("unsupported signature algorithm, %s", alg)
 	}

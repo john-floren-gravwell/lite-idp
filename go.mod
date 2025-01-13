@@ -42,3 +42,5 @@ require (
 )
 
 go 1.13
+
+replace github.com/amdonov/xmlsig => github.com/andrew-ar/xmlsig v0.0.0-20240223163059-15598de2ea00
